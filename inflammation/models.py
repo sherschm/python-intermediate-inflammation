@@ -9,7 +9,8 @@ and each column represents a single day across all patients.
 
 import json
 import numpy as np
-
+import glob
+import os
 
 def load_csv(filename):
     """Load a Numpy array from a CSV
@@ -17,6 +18,33 @@ def load_csv(filename):
     :param filename: Filename of CSV to load
     """
     return np.loadtxt(fname=filename, delimiter=',')
+
+
+class CSVDataSource:
+    """
+  Loads all the inflammation csvs within a specified folder.
+  """
+    def __init__(self,path):
+        self._path=path
+    def load_inflammation_data(self):
+        data_file_paths = glob.glob(os.path.join(self._path, 'inflammation*.csv'))
+        if len(data_file_paths) == 0:
+            raise ValueError(f"No inflammation csv's found in path {self._path}")
+        data = map(load_csv, data_file_paths)
+        return list(data)
+
+class JSONDataSource:
+    """
+    Loads all the inflammation JSON file within a specified folder.
+    """
+    def __init__(self,path):
+        self._path=path
+    def load_inflammation_data(self):
+        data_file_paths = glob.glob(os.path.join(self._path, 'inflammation*.json'))
+        if len(data_file_paths) == 0:
+            raise ValueError(f"No inflammation JSON's found in path {self._path}")
+        data = map(load_json, data_file_paths)
+        return list(data)
 
 def load_json(filename):
     """Load a numpy array from a JSON document.
